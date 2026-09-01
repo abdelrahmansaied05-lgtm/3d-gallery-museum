@@ -2,112 +2,60 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>معرض فني تفاعلي - Interactive Art Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diana's 3D Birthday Gallery 🎉</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
         }
 
-        html, body {
+        body {
             width: 100%;
-            height: 100%;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
+            height: 100vh;
             background: #000;
-            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
         }
 
         #canvas {
             display: block;
             width: 100%;
             height: 100%;
-            touch-action: none;
         }
 
-        #ui {
+        #info {
             position: absolute;
             top: 20px;
             left: 20px;
             color: #fff;
-            font-size: 12px;
             z-index: 10;
             background: rgba(0, 0, 0, 0.8);
-            padding: 12px;
-            border-radius: 8px;
-            max-width: 280px;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            font-size: 14px;
         }
 
-        #controls {
+        #info h1 {
+            color: #ff69b4;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #instructions {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 12px 20px;
-            border-radius: 8px;
             color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 10px;
             text-align: center;
             z-index: 10;
-            font-size: 11px;
-            max-width: 90%;
-        }
-
-        /* Mobile Controls */
-        #mobileControls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 20;
-            display: none;
-        }
-
-        .joystick-container {
-            width: 100px;
-            height: 100px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            position: relative;
-            margin-bottom: 10px;
-            touch-action: none;
-        }
-
-        .joystick-thumb {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            touch-action: none;
-        }
-
-        .mobile-button {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            margin: 5px;
-            touch-action: none;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .mobile-button:active {
-            transform: scale(0.95);
+            font-size: 13px;
         }
 
         #passwordPrompt {
@@ -115,58 +63,77 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.98);
-            padding: 30px 20px;
-            border-radius: 15px;
+            background: rgba(20, 20, 40, 0.95);
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
             z-index: 100;
             display: none;
-            backdrop-filter: blur(5px);
-            max-width: 90%;
-            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff69b4;
         }
 
         #passwordPrompt.show {
             display: block;
+            animation: popIn 0.4s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         #passwordPrompt h2 {
-            color: #fff;
+            color: #ff69b4;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        #passwordPrompt p {
+            color: #ddd;
             margin-bottom: 20px;
-            font-size: 22px;
         }
 
         #passwordInput {
-            padding: 12px;
+            padding: 15px;
             font-size: 18px;
             width: 100%;
             max-width: 280px;
-            border: 2px solid #666;
-            border-radius: 8px;
-            background: #222;
-            color: #fff;
-            margin-bottom: 15px;
+            border: 2px solid #ff69b4;
+            border-radius: 10px;
+            background: #1a1a2e;
+            color: #ff69b4;
+            margin-bottom: 20px;
             text-align: center;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+        }
+
+        #passwordInput::placeholder {
+            color: #666;
         }
 
         #passwordInput:focus {
             outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
         }
 
         .btn {
-            padding: 12px 30px;
+            padding: 15px 40px;
             font-size: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: bold;
             transition: all 0.3s ease;
             width: 100%;
             max-width: 280px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
         }
 
         .btn:active {
@@ -178,53 +145,141 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            padding: 30px;
-            border-radius: 15px;
+            background: rgba(20, 20, 40, 0.98);
+            padding: 50px;
+            border-radius: 20px;
             text-align: center;
             z-index: 100;
             display: none;
-            max-width: 90%;
+            animation: celebrate 0.6s ease-out;
+            border: 3px solid #ff69b4;
         }
 
         .success-message.show {
             display: block;
-            animation: celebrate 0.5s ease-in-out;
         }
 
         @keyframes celebrate {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         .success-message h1 {
-            color: #ffd700;
-            font-size: 28px;
-            margin-bottom: 10px;
+            color: #ff69b4;
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .success-message p {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
 
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            background: #ffd700;
             pointer-events: none;
+            font-size: 20px;
+        }
+
+        #galleryContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        #galleryContainer.show {
+            display: flex;
+        }
+
+        .gallery-title {
+            color: #ff69b4;
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            background: rgba(255, 105, 180, 0.1);
+            border: 2px solid #ff69b4;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            background: rgba(255, 105, 180, 0.2);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .gallery-emoji {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .gallery-text {
+            color: #ff69b4;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        #closeGallery {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff69b4;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 210;
+        }
+
+        #closeGallery:hover {
+            background: #ff1493;
         }
 
         @media (max-width: 768px) {
-            #mobileControls {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
+            #info {
+                max-width: 90%;
+                font-size: 12px;
             }
 
-            #controls {
-                display: none;
-            }
-
-            #ui {
-                font-size: 11px;
-                padding: 10px;
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
         }
     </style>
@@ -232,35 +287,37 @@
 <body>
     <canvas id="canvas"></canvas>
 
-    <div id="ui">
-        <div><strong>🎨 معرض فني</strong></div>
-        <div style="margin-top: 8px; color: #aaa;">
-            استخدم التحكم<br>
-            للحركة والالتفات
-        </div>
+    <div id="info">
+        <h1>🎂 Happy Birthday!</h1>
+        <p>Diana's 3D Gallery</p>
+        <p style="font-size: 12px; color: #aaa; margin-top: 10px;">
+            استخدم WASD أو الأسهم للحركة<br>
+            حرك الفأرة للالتفات<br>
+            SPACE للقفز
+        </p>
     </div>
 
-    <div id="controls">
-        ↑ W / ↓ S للأمام | ← A / → D لليمين | 🖱️ حرك الفأرة
-    </div>
-
-    <div id="mobileControls">
-        <div class="joystick-container" id="joystickContainer">
-            <div class="joystick-thumb" id="joystickThumb"></div>
-        </div>
-        <button class="mobile-button" id="jumpBtn">⬆️</button>
+    <div id="instructions">
+        ↑ W / ↓ S | ← A / → D | 🖱️ للالتفات
     </div>
 
     <div id="passwordPrompt">
-        <h2>🔐 الباب مغلق</h2>
-        <p style="color: #999; margin-bottom: 15px;">أدخل رمز الدخول</p>
-        <input type="password" id="passwordInput" placeholder="الرمز" maxlength="8">
-        <button class="btn" onclick="checkPassword()">فتح الباب</button>
+        <h2>🎁 Birthday Gift!</h2>
+        <p>أدخل الرمز السري</p>
+        <input type="password" id="passwordInput" placeholder="الرمز">
+        <button class="btn" onclick="checkPassword()">فتح الهدية 🎀</button>
     </div>
 
     <div class="success-message" id="successMessage">
-        <h1>🎉 مرحباً ديانا!</h1>
-        <p style="color: #fff; font-size: 16px;">تم فتح الباب بنجاح</p>
+        <h1>🎉 🎂 ✨</h1>
+        <p>Happy Birthday Diana!</p>
+        <p style="font-size: 18px; color: #ff69b4;">عيد ميلاد سعيد يا ديانا!</p>
+    </div>
+
+    <div id="galleryContainer">
+        <button id="closeGallery" onclick="closeGallery()">✕ إغلاق</button>
+        <div class="gallery-title">🎨 معرض الصور</div>
+        <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -271,206 +328,280 @@
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x1a1a1a);
-        scene.background = new THREE.Color(0x1a1a1a);
+        renderer.setClearColor(0x0a0a1a);
+        scene.background = new THREE.Color(0x0a0a1a);
+        scene.fog = new THREE.Fog(0x0a0a1a, 80, 100);
 
         const CORRIDOR_LENGTH = 50;
         const CORRIDOR_WIDTH = 8;
         const WALL_HEIGHT = 4;
+        const PAINTING_WIDTH = 1.5;
+        const PAINTING_HEIGHT = 2;
 
-        // Player
         const player = {
             position: new THREE.Vector3(0, 1.6, -CORRIDOR_LENGTH / 2 + 5),
             velocity: new THREE.Vector3(0, 0, 0),
             speed: 0.15,
+            lookSpeed: 0.003,
             isGrounded: false
         };
 
         camera.position.copy(player.position);
 
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        let mouseX = 0, mouseY = 0;
+        let isMouseLocked = false;
+
+        document.addEventListener('pointerlockchange', () => {
+            isMouseLocked = document.pointerLockElement === canvas;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isMouseLocked) {
+                mouseX = e.movementX;
+                mouseY = e.movementY;
+            }
+        });
+
+        canvas.addEventListener('click', () => {
+            if (!document.pointerLockElement) {
+                canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+                canvas.requestPointerLock();
+            }
+        });
+
         // Floor
-        const floor = new THREE.Mesh(
-            new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH),
-            new THREE.MeshStandardMaterial({ color: 0xd4a574 })
-        );
+        const floorGeometry = new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH);
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a3a, roughness: 0.7 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.rotation.x = -Math.PI / 2;
         scene.add(floor);
 
         // Ceiling
-        const ceiling = new THREE.Mesh(
-            new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH),
-            new THREE.MeshStandardMaterial({ color: 0x2a2a2a })
-        );
+        const ceilingGeometry = new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH);
+        const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x0a0a1a, roughness: 0.8 });
+        const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
         ceiling.rotation.x = Math.PI / 2;
         ceiling.position.y = WALL_HEIGHT;
         scene.add(ceiling);
 
-        // Walls
-        const leftWall = new THREE.Mesh(
-            new THREE.PlaneGeometry(CORRIDOR_LENGTH, WALL_HEIGHT),
-            new THREE.MeshStandardMaterial({ color: 0xf5f5f5 })
-        );
+        // Left Wall
+        const leftWallGeometry = new THREE.PlaneGeometry(CORRIDOR_LENGTH, WALL_HEIGHT);
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a3a, roughness: 0.6 });
+        const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
         leftWall.rotation.y = Math.PI / 2;
-        leftWall.position.set(-CORRIDOR_WIDTH / 2, WALL_HEIGHT / 2, 0);
+        leftWall.position.x = -CORRIDOR_WIDTH / 2;
+        leftWall.position.y = WALL_HEIGHT / 2;
         scene.add(leftWall);
 
-        const rightWall = new THREE.Mesh(
-            new THREE.PlaneGeometry(CORRIDOR_LENGTH, WALL_HEIGHT),
-            new THREE.MeshStandardMaterial({ color: 0xf5f5f5 })
-        );
+        // Right Wall
+        const rightWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
         rightWall.rotation.y = Math.PI / 2;
-        rightWall.position.set(CORRIDOR_WIDTH / 2, WALL_HEIGHT / 2, 0);
+        rightWall.position.x = CORRIDOR_WIDTH / 2;
+        rightWall.position.y = WALL_HEIGHT / 2;
         scene.add(rightWall);
 
-        // Paintings
-        const colors = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0xa8dadc, 0xf4a261, 0x2a9d8f];
-        for (let i = 0; i < 10; i++) {
-            const z = -CORRIDOR_LENGTH / 2 + i * 5;
-            
-            const paintL = new THREE.Mesh(
-                new THREE.PlaneGeometry(1.5, 2),
-                new THREE.MeshStandardMaterial({ color: colors[i % 6] })
-            );
-            paintL.position.set(-CORRIDOR_WIDTH / 2 + 0.1, 2, z);
-            scene.add(paintL);
-
-            const paintR = new THREE.Mesh(
-                new THREE.PlaneGeometry(1.5, 2),
-                new THREE.MeshStandardMaterial({ color: colors[(i + 1) % 6] })
-            );
-            paintR.position.set(CORRIDOR_WIDTH / 2 - 0.1, 2, z);
-            scene.add(paintR);
-        }
-
         // Door
-        const door = new THREE.Mesh(
-            new THREE.BoxGeometry(2, 2.5, 0.1),
-            new THREE.MeshStandardMaterial({ color: 0x8b4513 })
-        );
+        const doorGeometry = new THREE.BoxGeometry(2, 2.5, 0.1);
+        const doorMaterial = new THREE.MeshStandardMaterial({ color: 0xff69b4, roughness: 0.5, metalness: 0.3 });
+        const door = new THREE.Mesh(doorGeometry, doorMaterial);
         door.position.set(0, 1.25, CORRIDOR_LENGTH / 2 - 0.5);
         scene.add(door);
 
-        // Lighting
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const light = new THREE.DirectionalLight(0xffffff, 0.8);
-        light.position.set(0, 10, 5);
-        scene.add(light);
+        // Paintings
+        const paintingColors = [0xff69b4, 0xff1493, 0xffc0cb, 0xffb6c1, 0xff85b3, 0xff6ec7];
+        const spacing = 6;
+        const paintingsPerSide = Math.ceil(CORRIDOR_LENGTH / spacing);
 
-        // Controls
-        const keys = {};
+        for (let i = 0; i < paintingsPerSide; i++) {
+            const zPos = -CORRIDOR_LENGTH / 2 + i * spacing + 3;
+            
+            // Left painting
+            const frameL = new THREE.Mesh(
+                new THREE.BoxGeometry(PAINTING_WIDTH + 0.1, PAINTING_HEIGHT + 0.1, 0.08),
+                new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.3, metalness: 0.5 })
+            );
+            frameL.position.set(-CORRIDOR_WIDTH / 2 + 0.05, WALL_HEIGHT / 2, zPos);
+            scene.add(frameL);
+
+            const paintL = new THREE.Mesh(
+                new THREE.PlaneGeometry(PAINTING_WIDTH, PAINTING_HEIGHT),
+                new THREE.MeshStandardMaterial({ color: paintingColors[i % paintingColors.length], roughness: 0.4 })
+            );
+            paintL.position.set(-CORRIDOR_WIDTH / 2 + 0.095, WALL_HEIGHT / 2, zPos);
+            scene.add(paintL);
+
+            // Right painting
+            const frameR = new THREE.Mesh(
+                new THREE.BoxGeometry(PAINTING_WIDTH + 0.1, PAINTING_HEIGHT + 0.1, 0.08),
+                new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.3, metalness: 0.5 })
+            );
+            frameR.position.set(CORRIDOR_WIDTH / 2 - 0.05, WALL_HEIGHT / 2, zPos);
+            scene.add(frameR);
+
+            const paintR = new THREE.Mesh(
+                new THREE.PlaneGeometry(PAINTING_WIDTH, PAINTING_HEIGHT),
+                new THREE.MeshStandardMaterial({ color: paintingColors[(i + 1) % paintingColors.length], roughness: 0.4 })
+            );
+            paintR.position.set(CORRIDOR_WIDTH / 2 - 0.095, WALL_HEIGHT / 2, zPos);
+            scene.add(paintR);
+        }
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xff69b4, 0.4);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xff69b4, 0.8);
+        directionalLight.position.set(0, 10, 5);
+        scene.add(directionalLight);
+
+        // Point lights for ambiance
+        for (let i = 0; i < 5; i++) {
+            const light = new THREE.PointLight(0xff69b4, 0.5, 30);
+            light.position.set(
+                (Math.random() - 0.5) * CORRIDOR_WIDTH,
+                WALL_HEIGHT - 0.5,
+                -CORRIDOR_LENGTH / 2 + i * 10
+            );
+            scene.add(light);
+        }
+
         let doorUnlocked = false;
 
-        // Keyboard
-        window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
-        window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
-
-        // Mobile Joystick
-        const joystickContainer = document.getElementById('joystickContainer');
-        const joystickThumb = document.getElementById('joystickThumb');
-        let joystickActive = false;
-        let joystickX = 0, joystickY = 0;
-
-        joystickContainer.addEventListener('touchstart', (e) => {
-            joystickActive = true;
-        }, { passive: false });
-
-        joystickContainer.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!joystickActive) return;
-            
-            const touch = e.touches[0];
-            const rect = joystickContainer.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            joystickX = (touch.clientX - centerX) / (rect.width / 2);
-            joystickY = (touch.clientY - centerY) / (rect.height / 2);
-            
-            const distance = Math.sqrt(joystickX ** 2 + joystickY ** 2);
-            if (distance > 1) {
-                joystickX /= distance;
-                joystickY /= distance;
-            }
-            
-            const radius = 30;
-            joystickThumb.style.transform = `translate(calc(-50% + ${joystickX * radius}px), calc(-50% + ${joystickY * radius}px))`;
-        }, { passive: false });
-
-        joystickContainer.addEventListener('touchend', () => {
-            joystickActive = false;
-            joystickX = 0;
-            joystickY = 0;
-            joystickThumb.style.transform = 'translate(-50%, -50%)';
-        });
-
-        // Jump Button
-        document.getElementById('jumpBtn').addEventListener('touchstart', () => {
-            if (player.isGrounded) {
-                player.velocity.y = 0.15;
-                player.isGrounded = false;
-            }
-        });
-
-        // Password
         window.checkPassword = function() {
-            if (document.getElementById('passwordInput').value === '13102024') {
+            const input = document.getElementById('passwordInput').value;
+            if (input === '13102024') {
                 doorUnlocked = true;
                 document.getElementById('passwordPrompt').classList.remove('show');
-                showSuccess();
+                showSuccessMessage();
+                playBirthdaySong();
             } else {
                 document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').style.borderColor = '#ff0000';
+                setTimeout(() => {
+                    document.getElementById('passwordInput').style.borderColor = '#ff69b4';
+                }, 500);
             }
         };
 
-        function showSuccess() {
+        function showSuccessMessage() {
             const msg = document.getElementById('successMessage');
             msg.classList.add('show');
             
             // Confetti
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
+                confetti.textContent = ['🎉', '🎂', '🎈', '🎁', '✨', '💖'][Math.floor(Math.random() * 6)];
                 confetti.style.left = Math.random() * window.innerWidth + 'px';
-                confetti.style.top = '-10px';
-                confetti.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4'][Math.floor(Math.random() * 3)];
+                confetti.style.top = '-30px';
                 document.body.appendChild(confetti);
                 
                 let y = 0;
                 const fall = setInterval(() => {
-                    y += Math.random() * 3 + 1;
+                    y += Math.random() * 5 + 2;
                     confetti.style.top = y + 'px';
+                    confetti.style.opacity = 1 - (y / window.innerHeight);
                     if (y > window.innerHeight) {
                         clearInterval(fall);
                         confetti.remove();
                     }
                 }, 20);
             }
+
+            setTimeout(() => {
+                msg.classList.remove('show');
+                showGallery();
+            }, 3000);
         }
 
-        // Animation
+        function showGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            
+            const items = [
+                { emoji: '📸', text: 'صورة 1' },
+                { emoji: '🌹', text: 'الورود' },
+                { emoji: '🎀', text: 'الهدايا' },
+                { emoji: '💝', text: 'الحب' },
+                { emoji: '⭐', text: 'النجوم' },
+                { emoji: '🌟', text: 'التألق' }
+            ];
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                div.innerHTML = `<div class="gallery-emoji">${item.emoji}</div><div class="gallery-text">${item.text}</div>`;
+                grid.appendChild(div);
+            });
+
+            document.getElementById('galleryContainer').classList.add('show');
+        }
+
+        window.closeGallery = function() {
+            document.getElementById('galleryContainer').classList.remove('show');
+        };
+
+        function playBirthdaySong() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const notes = [
+                    { freq: 262, duration: 0.5 },
+                    { freq: 262, duration: 0.5 },
+                    { freq: 294, duration: 1 },
+                    { freq: 262, duration: 1 },
+                    { freq: 330, duration: 1 },
+                    { freq: 294, duration: 2 }
+                ];
+                
+                let time = audioContext.currentTime;
+                notes.forEach(note => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    
+                    osc.frequency.value = note.freq;
+                    osc.type = 'sine';
+                    
+                    gain.gain.setValueAtTime(0.3, time);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + note.duration);
+                    
+                    osc.start(time);
+                    osc.stop(time + note.duration);
+                    
+                    time += note.duration + 0.1;
+                });
+            } catch (e) {
+                console.log('Audio not available');
+            }
+        }
+
         function animate() {
             requestAnimationFrame(animate);
 
-            // Movement
-            let moveX = 0, moveZ = 0;
+            const moveDirection = new THREE.Vector3();
+            
+            if (keys['w']) moveDirection.z -= 1;
+            if (keys['s']) moveDirection.z += 1;
+            if (keys['a']) moveDirection.x -= 1;
+            if (keys['d']) moveDirection.x += 1;
 
-            if (keys['w']) moveZ -= 1;
-            if (keys['s']) moveZ += 1;
-            if (keys['a']) moveX -= 1;
-            if (keys['d']) moveX += 1;
-
-            // Mobile joystick movement
-            moveX += joystickX;
-            moveZ -= joystickY;
-
-            if (moveX || moveZ) {
-                const length = Math.sqrt(moveX ** 2 + moveZ ** 2);
-                moveX /= length;
-                moveZ /= length;
+            if (moveDirection.length() > 0) {
+                moveDirection.normalize();
             }
 
-            player.velocity.x = moveX * player.speed;
-            player.velocity.z = moveZ * player.speed;
+            player.velocity.x = moveDirection.x * player.speed;
+            player.velocity.z = moveDirection.z * player.speed;
+
             player.velocity.y -= 0.01;
 
             player.position.add(player.velocity);
@@ -506,11 +637,23 @@
                 player.isGrounded = false;
             }
 
+            if (isMouseLocked) {
+                camera.rotation.order = 'YXZ';
+                camera.rotation.y -= mouseX * player.lookSpeed;
+                camera.rotation.x -= mouseY * player.lookSpeed;
+
+                if (camera.rotation.x > Math.PI / 2) camera.rotation.x = Math.PI / 2;
+                if (camera.rotation.x < -Math.PI / 2) camera.rotation.x = -Math.PI / 2;
+                
+                mouseX = 0;
+                mouseY = 0;
+            }
+
             camera.position.copy(player.position);
+
             renderer.render(scene, camera);
         }
 
-        // Handle resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -519,15 +662,11 @@
 
         animate();
 
-        // Enter key
         document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkPassword();
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
         });
-
-        // Prevent default mobile behaviors
-        document.addEventListener('touchmove', (e) => {
-            if (e.target === canvas) e.preventDefault();
-        }, { passive: false });
     </script>
 </body>
 </html>
