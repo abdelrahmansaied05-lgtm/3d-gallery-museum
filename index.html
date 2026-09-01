@@ -2,25 +2,34 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>معرض فني تفاعلي - Interactive Art Gallery</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
             font-family: 'Arial', sans-serif;
             overflow: hidden;
             background: #000;
+            touch-action: none;
         }
 
         #canvas {
             display: block;
             width: 100%;
-            height: 100vh;
+            height: 100%;
+            touch-action: none;
         }
 
         #ui {
@@ -28,12 +37,77 @@
             top: 20px;
             left: 20px;
             color: #fff;
-            font-size: 14px;
+            font-size: 12px;
             z-index: 10;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px;
             border-radius: 8px;
-            max-width: 300px;
+            max-width: 280px;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: #fff;
+            text-align: center;
+            z-index: 10;
+            font-size: 11px;
+            max-width: 90%;
+        }
+
+        /* Mobile Controls */
+        #mobileControls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 20;
+            display: none;
+        }
+
+        .joystick-container {
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 10px;
+            touch-action: none;
+        }
+
+        .joystick-thumb {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            touch-action: none;
+        }
+
+        .mobile-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 5px;
+            touch-action: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .mobile-button:active {
+            transform: scale(0.95);
         }
 
         #passwordPrompt {
@@ -41,13 +115,15 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            padding: 40px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.98);
+            padding: 30px 20px;
+            border-radius: 15px;
             text-align: center;
             z-index: 100;
             display: none;
             backdrop-filter: blur(5px);
+            max-width: 90%;
+            width: 100%;
         }
 
         #passwordPrompt.show {
@@ -57,24 +133,21 @@
         #passwordPrompt h2 {
             color: #fff;
             margin-bottom: 20px;
-            font-size: 24px;
+            font-size: 22px;
         }
 
         #passwordInput {
-            padding: 12px 15px;
+            padding: 12px;
             font-size: 18px;
-            width: 300px;
+            width: 100%;
+            max-width: 280px;
             border: 2px solid #666;
-            border-radius: 5px;
+            border-radius: 8px;
             background: #222;
             color: #fff;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
             letter-spacing: 2px;
-        }
-
-        #passwordInput::placeholder {
-            color: #999;
         }
 
         #passwordInput:focus {
@@ -89,32 +162,15 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 5px;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+            width: 100%;
+            max-width: 280px;
         }
 
         .btn:active {
             transform: scale(0.98);
-        }
-
-        #controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 25px;
-            border-radius: 8px;
-            color: #fff;
-            text-align: center;
-            z-index: 10;
         }
 
         .success-message {
@@ -122,12 +178,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 40px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 15px;
             text-align: center;
             z-index: 100;
             display: none;
+            max-width: 90%;
         }
 
         .success-message.show {
@@ -142,8 +199,8 @@
 
         .success-message h1 {
             color: #ffd700;
-            font-size: 32px;
-            margin-bottom: 20px;
+            font-size: 28px;
+            margin-bottom: 10px;
         }
 
         .confetti {
@@ -153,41 +210,61 @@
             background: #ffd700;
             pointer-events: none;
         }
+
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #controls {
+                display: none;
+            }
+
+            #ui {
+                font-size: 11px;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
 
     <div id="ui">
-        <div><strong>🎨 معرض فني تفاعلي</strong></div>
-        <div style="margin-top: 10px; font-size: 12px; color: #aaa;">
-            استخدم الفأرة / الأسهم للتحكم<br>
-            W/A/S/D للحركة<br>
-            SPACE للقفز
+        <div><strong>🎨 معرض فني</strong></div>
+        <div style="margin-top: 8px; color: #aaa;">
+            استخدم التحكم<br>
+            للحركة والالتفات
         </div>
     </div>
 
     <div id="controls">
-        ↑ W / ↓ S للأمام والخلف | ← A / → D لليمين واليسار | 🖱️ حرك الفأرة للالتفات
+        ↑ W / ↓ S للأمام | ← A / → D لليمين | 🖱️ حرك الفأرة
     </div>
 
-    <div id="passwordPrompt" class="passwordPrompt">
-        <h2>🔐 الباب مغلق</h2>
-        <p style="color: #999; margin-bottom: 20px;">أدخل رمز الدخول</p>
-        <input type="password" id="passwordInput" placeholder="أدخل الرمز" maxlength="8">
-        <div>
-            <button class="btn" onclick="checkPassword()">فتح الباب</button>
+    <div id="mobileControls">
+        <div class="joystick-container" id="joystickContainer">
+            <div class="joystick-thumb" id="joystickThumb"></div>
         </div>
+        <button class="mobile-button" id="jumpBtn">⬆️</button>
+    </div>
+
+    <div id="passwordPrompt">
+        <h2>🔐 الباب مغلق</h2>
+        <p style="color: #999; margin-bottom: 15px;">أدخل رمز الدخول</p>
+        <input type="password" id="passwordInput" placeholder="الرمز" maxlength="8">
+        <button class="btn" onclick="checkPassword()">فتح الباب</button>
     </div>
 
     <div class="success-message" id="successMessage">
         <h1>🎉 مرحباً ديانا!</h1>
-        <p style="color: #fff; font-size: 18px;">تم فتح الباب بنجاح</p>
+        <p style="color: #fff; font-size: 16px;">تم فتح الباب بنجاح</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Three.js Gallery Setup
         const canvas = document.getElementById('canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -195,243 +272,172 @@
 
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x1a1a1a);
-        renderer.shadowMap.enabled = true;
         scene.background = new THREE.Color(0x1a1a1a);
-        scene.fog = new THREE.Fog(0x1a1a1a, 80, 100);
 
-        // Gallery dimensions
         const CORRIDOR_LENGTH = 50;
         const CORRIDOR_WIDTH = 8;
         const WALL_HEIGHT = 4;
-        const PAINTING_WIDTH = 1.5;
-        const PAINTING_HEIGHT = 2;
 
-        // Player position and movement
+        // Player
         const player = {
             position: new THREE.Vector3(0, 1.6, -CORRIDOR_LENGTH / 2 + 5),
             velocity: new THREE.Vector3(0, 0, 0),
             speed: 0.15,
-            lookSpeed: 0.003,
             isGrounded: false
         };
 
         camera.position.copy(player.position);
 
-        // Keyboard input
-        const keys = {};
-        window.addEventListener('keydown', (e) => {
-            keys[e.key.toLowerCase()] = true;
-        });
+        // Floor
+        const floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH),
+            new THREE.MeshStandardMaterial({ color: 0xd4a574 })
+        );
+        floor.rotation.x = -Math.PI / 2;
+        scene.add(floor);
 
-        window.addEventListener('keyup', (e) => {
-            keys[e.key.toLowerCase()] = false;
-        });
+        // Ceiling
+        const ceiling = new THREE.Mesh(
+            new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH),
+            new THREE.MeshStandardMaterial({ color: 0x2a2a2a })
+        );
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = WALL_HEIGHT;
+        scene.add(ceiling);
 
-        // Mouse look
-        let mouseX = 0, mouseY = 0;
-        let isMouseLocked = false;
+        // Walls
+        const leftWall = new THREE.Mesh(
+            new THREE.PlaneGeometry(CORRIDOR_LENGTH, WALL_HEIGHT),
+            new THREE.MeshStandardMaterial({ color: 0xf5f5f5 })
+        );
+        leftWall.rotation.y = Math.PI / 2;
+        leftWall.position.set(-CORRIDOR_WIDTH / 2, WALL_HEIGHT / 2, 0);
+        scene.add(leftWall);
 
-        document.addEventListener('pointerlockchange', () => {
-            isMouseLocked = document.pointerLockElement === canvas;
-        });
+        const rightWall = new THREE.Mesh(
+            new THREE.PlaneGeometry(CORRIDOR_LENGTH, WALL_HEIGHT),
+            new THREE.MeshStandardMaterial({ color: 0xf5f5f5 })
+        );
+        rightWall.rotation.y = Math.PI / 2;
+        rightWall.position.set(CORRIDOR_WIDTH / 2, WALL_HEIGHT / 2, 0);
+        scene.add(rightWall);
 
-        document.addEventListener('mousemove', (e) => {
-            if (isMouseLocked) {
-                mouseX = e.movementX;
-                mouseY = e.movementY;
-            }
-        });
+        // Paintings
+        const colors = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0xa8dadc, 0xf4a261, 0x2a9d8f];
+        for (let i = 0; i < 10; i++) {
+            const z = -CORRIDOR_LENGTH / 2 + i * 5;
+            
+            const paintL = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.5, 2),
+                new THREE.MeshStandardMaterial({ color: colors[i % 6] })
+            );
+            paintL.position.set(-CORRIDOR_WIDTH / 2 + 0.1, 2, z);
+            scene.add(paintL);
 
-        canvas.addEventListener('click', () => {
-            if (!document.pointerLockElement) {
-                canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-                canvas.requestPointerLock();
-            }
-        });
-
-        // Create corridor
-        function createCorridor() {
-            // Floor
-            const floorGeometry = new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH);
-            const floorMaterial = new THREE.MeshStandardMaterial({
-                color: 0xd4a574,
-                roughness: 0.7,
-                metalness: 0
-            });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-            floor.rotation.x = -Math.PI / 2;
-            floor.position.y = 0;
-            floor.receiveShadow = true;
-            scene.add(floor);
-
-            // Ceiling
-            const ceilingGeometry = new THREE.PlaneGeometry(CORRIDOR_WIDTH, CORRIDOR_LENGTH);
-            const ceilingMaterial = new THREE.MeshStandardMaterial({
-                color: 0x2a2a2a,
-                roughness: 0.8,
-                metalness: 0
-            });
-            const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-            ceiling.rotation.x = Math.PI / 2;
-            ceiling.position.y = WALL_HEIGHT;
-            ceiling.receiveShadow = true;
-            scene.add(ceiling);
-
-            // Left wall
-            const leftWallGeometry = new THREE.PlaneGeometry(CORRIDOR_LENGTH, WALL_HEIGHT);
-            const wallMaterial = new THREE.MeshStandardMaterial({
-                color: 0xf5f5f5,
-                roughness: 0.6,
-                metalness: 0
-            });
-            const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
-            leftWall.rotation.y = Math.PI / 2;
-            leftWall.position.x = -CORRIDOR_WIDTH / 2;
-            leftWall.position.y = WALL_HEIGHT / 2;
-            leftWall.receiveShadow = true;
-            scene.add(leftWall);
-
-            // Right wall
-            const rightWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
-            rightWall.rotation.y = Math.PI / 2;
-            rightWall.position.x = CORRIDOR_WIDTH / 2;
-            rightWall.position.y = WALL_HEIGHT / 2;
-            rightWall.receiveShadow = true;
-            scene.add(rightWall);
-
-            // Door at the end
-            const doorGeometry = new THREE.BoxGeometry(2, 2.5, 0.1);
-            const doorMaterial = new THREE.MeshStandardMaterial({
-                color: 0x8b4513,
-                roughness: 0.5,
-                metalness: 0.3
-            });
-            const door = new THREE.Mesh(doorGeometry, doorMaterial);
-            door.position.set(0, 1.25, CORRIDOR_LENGTH / 2 - 0.5);
-            door.castShadow = true;
-            door.receiveShadow = true;
-            door.userData.isDoor = true;
-            scene.add(door);
+            const paintR = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.5, 2),
+                new THREE.MeshStandardMaterial({ color: colors[(i + 1) % 6] })
+            );
+            paintR.position.set(CORRIDOR_WIDTH / 2 - 0.1, 2, z);
+            scene.add(paintR);
         }
 
-        // Add paintings
-        function addPaintings() {
-            const paintingColors = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0xa8dadc, 0xf4a261, 0x2a9d8f];
-            const spacing = 6;
-            const paintingsPerSide = Math.ceil(CORRIDOR_LENGTH / spacing);
-
-            for (let i = 0; i < paintingsPerSide; i++) {
-                const zPos = -CORRIDOR_LENGTH / 2 + i * spacing + 3;
-                
-                addPainting(
-                    -CORRIDOR_WIDTH / 2 + 0.05,
-                    WALL_HEIGHT / 2,
-                    zPos,
-                    paintingColors[i % paintingColors.length],
-                    i
-                );
-
-                addPainting(
-                    CORRIDOR_WIDTH / 2 - 0.05,
-                    WALL_HEIGHT / 2,
-                    zPos,
-                    paintingColors[(i + 1) % paintingColors.length],
-                    paintingsPerSide + i
-                );
-            }
-        }
-
-        function addPainting(x, y, z, color, index) {
-            const frameGeometry = new THREE.BoxGeometry(PAINTING_WIDTH + 0.1, PAINTING_HEIGHT + 0.1, 0.08);
-            const frameMaterial = new THREE.MeshStandardMaterial({
-                color: 0x2c2c2c,
-                roughness: 0.3,
-                metalness: 0.5
-            });
-            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-            frame.position.set(x, y, z);
-            frame.castShadow = true;
-            frame.receiveShadow = true;
-            scene.add(frame);
-
-            const paintingGeometry = new THREE.PlaneGeometry(PAINTING_WIDTH, PAINTING_HEIGHT);
-            const paintingMaterial = new THREE.MeshStandardMaterial({
-                color: color,
-                roughness: 0.4,
-                metalness: 0
-            });
-            const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
-            painting.position.set(x + 0.045, y, z + 0.05);
-            painting.castShadow = true;
-            painting.receiveShadow = true;
-            scene.add(painting);
-        }
+        // Door
+        const door = new THREE.Mesh(
+            new THREE.BoxGeometry(2, 2.5, 0.1),
+            new THREE.MeshStandardMaterial({ color: 0x8b4513 })
+        );
+        door.position.set(0, 1.25, CORRIDOR_LENGTH / 2 - 0.5);
+        scene.add(door);
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const light = new THREE.DirectionalLight(0xffffff, 0.8);
+        light.position.set(0, 10, 5);
+        scene.add(light);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(0, 10, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.camera.far = 100;
-        directionalLight.shadow.camera.left = -30;
-        directionalLight.shadow.camera.right = 30;
-        directionalLight.shadow.camera.top = 30;
-        directionalLight.shadow.camera.bottom = -30;
-        scene.add(directionalLight);
-
-        // Spotlights
-        for (let i = 0; i < 8; i++) {
-            const spotlight = new THREE.SpotLight(0xffffff, 0.5, 20, Math.PI / 6, 0.5, 2);
-            spotlight.position.set(
-                i % 2 === 0 ? -3 : 3,
-                WALL_HEIGHT - 0.5,
-                -CORRIDOR_LENGTH / 2 + i * 6
-            );
-            spotlight.target.position.set(0, 1, spotlight.position.z);
-            scene.add(spotlight);
-            scene.add(spotlight.target);
-        }
-
-        // Create scene
-        createCorridor();
-        addPaintings();
-
+        // Controls
+        const keys = {};
         let doorUnlocked = false;
 
-        // Password check
+        // Keyboard
+        window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+        window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+        // Mobile Joystick
+        const joystickContainer = document.getElementById('joystickContainer');
+        const joystickThumb = document.getElementById('joystickThumb');
+        let joystickActive = false;
+        let joystickX = 0, joystickY = 0;
+
+        joystickContainer.addEventListener('touchstart', (e) => {
+            joystickActive = true;
+        }, { passive: false });
+
+        joystickContainer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!joystickActive) return;
+            
+            const touch = e.touches[0];
+            const rect = joystickContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            joystickX = (touch.clientX - centerX) / (rect.width / 2);
+            joystickY = (touch.clientY - centerY) / (rect.height / 2);
+            
+            const distance = Math.sqrt(joystickX ** 2 + joystickY ** 2);
+            if (distance > 1) {
+                joystickX /= distance;
+                joystickY /= distance;
+            }
+            
+            const radius = 30;
+            joystickThumb.style.transform = `translate(calc(-50% + ${joystickX * radius}px), calc(-50% + ${joystickY * radius}px))`;
+        }, { passive: false });
+
+        joystickContainer.addEventListener('touchend', () => {
+            joystickActive = false;
+            joystickX = 0;
+            joystickY = 0;
+            joystickThumb.style.transform = 'translate(-50%, -50%)';
+        });
+
+        // Jump Button
+        document.getElementById('jumpBtn').addEventListener('touchstart', () => {
+            if (player.isGrounded) {
+                player.velocity.y = 0.15;
+                player.isGrounded = false;
+            }
+        });
+
+        // Password
         window.checkPassword = function() {
-            const input = document.getElementById('passwordInput').value;
-            if (input === '13102024') {
+            if (document.getElementById('passwordInput').value === '13102024') {
                 doorUnlocked = true;
                 document.getElementById('passwordPrompt').classList.remove('show');
-                showSuccessMessage();
-                playHappyBirthday();
+                showSuccess();
             } else {
                 document.getElementById('passwordInput').value = '';
-                document.getElementById('passwordInput').style.borderColor = '#ff6b6b';
-                setTimeout(() => {
-                    document.getElementById('passwordInput').style.borderColor = '#666';
-                }, 1000);
             }
         };
 
-        function showSuccessMessage() {
+        function showSuccess() {
             const msg = document.getElementById('successMessage');
             msg.classList.add('show');
             
-            for (let i = 0; i < 50; i++) {
+            // Confetti
+            for (let i = 0; i < 30; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * window.innerWidth + 'px';
                 confetti.style.top = '-10px';
-                confetti.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4', '#a8dadc'][Math.floor(Math.random() * 4)];
+                confetti.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4'][Math.floor(Math.random() * 3)];
                 document.body.appendChild(confetti);
                 
                 let y = 0;
                 const fall = setInterval(() => {
-                    y += Math.random() * 5 + 2;
+                    y += Math.random() * 3 + 1;
                     confetti.style.top = y + 'px';
                     if (y > window.innerHeight) {
                         clearInterval(fall);
@@ -439,72 +445,37 @@
                     }
                 }, 20);
             }
-            
-            setTimeout(() => {
-                msg.classList.remove('show');
-            }, 5000);
         }
 
-        function playHappyBirthday() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const notes = [
-                    { freq: 262, duration: 0.5 },
-                    { freq: 262, duration: 0.5 },
-                    { freq: 294, duration: 1 },
-                    { freq: 262, duration: 1 },
-                    { freq: 330, duration: 1 },
-                    { freq: 294, duration: 2 }
-                ];
-                
-                let time = audioContext.currentTime;
-                notes.forEach(note => {
-                    const osc = audioContext.createOscillator();
-                    const gain = audioContext.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioContext.destination);
-                    
-                    osc.frequency.value = note.freq;
-                    osc.type = 'sine';
-                    
-                    gain.gain.setValueAtTime(0.3, time);
-                    gain.gain.exponentialRampToValueAtTime(0.01, time + note.duration);
-                    
-                    osc.start(time);
-                    osc.stop(time + note.duration);
-                    
-                    time += note.duration + 0.1;
-                });
-            } catch(e) {
-                console.log('Audio playback not available');
-            }
-        }
-
-        // Animation loop
+        // Animation
         function animate() {
             requestAnimationFrame(animate);
 
-            const moveDirection = new THREE.Vector3();
-            
-            if (keys['w']) moveDirection.z -= 1;
-            if (keys['s']) moveDirection.z += 1;
-            if (keys['a']) moveDirection.x -= 1;
-            if (keys['d']) moveDirection.x += 1;
+            // Movement
+            let moveX = 0, moveZ = 0;
 
-            if (moveDirection.length() > 0) {
-                moveDirection.normalize();
-                const angle = Math.atan2(camera.position.x - player.position.x, camera.position.z - player.position.z);
-                moveDirection.applyAxisAngle(new THREE.Vector3(0, 1, 0), -angle);
+            if (keys['w']) moveZ -= 1;
+            if (keys['s']) moveZ += 1;
+            if (keys['a']) moveX -= 1;
+            if (keys['d']) moveX += 1;
+
+            // Mobile joystick movement
+            moveX += joystickX;
+            moveZ -= joystickY;
+
+            if (moveX || moveZ) {
+                const length = Math.sqrt(moveX ** 2 + moveZ ** 2);
+                moveX /= length;
+                moveZ /= length;
             }
 
-            player.velocity.x = moveDirection.x * player.speed;
-            player.velocity.z = moveDirection.z * player.speed;
-
+            player.velocity.x = moveX * player.speed;
+            player.velocity.z = moveZ * player.speed;
             player.velocity.y -= 0.01;
 
             player.position.add(player.velocity);
 
-            // Bounds checking
+            // Boundaries
             if (player.position.z > CORRIDOR_LENGTH / 2 - 1) {
                 if (!doorUnlocked) {
                     player.position.z = CORRIDOR_LENGTH / 2 - 1;
@@ -535,23 +506,11 @@
                 player.isGrounded = false;
             }
 
-            if (isMouseLocked) {
-                camera.rotation.order = 'YXZ';
-                camera.rotation.y -= mouseX * player.lookSpeed;
-                camera.rotation.x -= mouseY * player.lookSpeed;
-
-                if (camera.rotation.x > Math.PI / 2) camera.rotation.x = Math.PI / 2;
-                if (camera.rotation.x < -Math.PI / 2) camera.rotation.x = -Math.PI / 2;
-                
-                mouseX = 0;
-                mouseY = 0;
-            }
-
             camera.position.copy(player.position);
-
             renderer.render(scene, camera);
         }
 
+        // Handle resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -560,12 +519,15 @@
 
         animate();
 
-        // Password input enter key
+        // Enter key
         document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
+            if (e.key === 'Enter') checkPassword();
         });
+
+        // Prevent default mobile behaviors
+        document.addEventListener('touchmove', (e) => {
+            if (e.target === canvas) e.preventDefault();
+        }, { passive: false });
     </script>
 </body>
 </html>
