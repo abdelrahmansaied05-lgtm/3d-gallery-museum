@@ -115,7 +115,6 @@
             color: #fff;
             text-align: center;
             z-index: 10;
-            font-size: 12px;
         }
 
         .success-message {
@@ -154,90 +153,6 @@
             background: #ffd700;
             pointer-events: none;
         }
-
-        #galleryOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 200;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow-y: auto;
-            padding: 40px 20px;
-        }
-
-        #galleryOverlay.show {
-            display: flex;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .gallery-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #666;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .gallery-item:hover {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            transform: scale(1.05);
-        }
-
-        .gallery-item-img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
-
-        .gallery-item-title {
-            padding: 15px;
-            color: #fff;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        #closeGallery {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #ffd700;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            z-index: 210;
-        }
-
-        #closeGallery:hover {
-            background: #ffed4e;
-        }
-
-        #galleryTitle {
-            color: #fff;
-            margin-bottom: 30px;
-            width: 100%;
-            text-align: center;
-            font-size: 28px;
-            z-index: 201;
-        }
     </style>
 </head>
 <body>
@@ -248,7 +163,7 @@
         <div style="margin-top: 10px; font-size: 12px; color: #aaa;">
             استخدم الفأرة / الأسهم للتحكم<br>
             W/A/S/D للحركة<br>
-            Click للتحكم بالفأرة
+            SPACE للقفز
         </div>
     </div>
 
@@ -268,12 +183,6 @@
     <div class="success-message" id="successMessage">
         <h1>🎉 مرحباً ديانا!</h1>
         <p style="color: #fff; font-size: 18px;">تم فتح الباب بنجاح</p>
-    </div>
-
-    <div id="galleryOverlay">
-        <button id="closeGallery" onclick="closeGallery()">✕ إغلاق</button>
-        <div id="galleryTitle">🖼️ معرض الصور</div>
-        <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -571,37 +480,6 @@
             }
         }
 
-        window.closeGallery = function() {
-            document.getElementById('galleryOverlay').classList.remove('show');
-        };
-
-        function showGalleryOverlay() {
-            const overlay = document.getElementById('galleryOverlay');
-            const grid = document.getElementById('galleryGrid');
-            grid.innerHTML = '';
-            
-            const paintings = [
-                { title: 'الغروب الذهبي', color: '#ffe66d' },
-                { title: 'البحر الهادئ', color: '#4ecdc4' },
-                { title: 'القمر الساحر', color: '#a8dadc' },
-                { title: 'الطبيعة الخضراء', color: '#2a9d8f' },
-                { title: 'النجوم المتلألئة', color: '#f4a261' },
-                { title: 'الورود الحمراء', color: '#ff6b6b' }
-            ];
-            
-            paintings.forEach(painting => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <div style="width: 100%; height: 300px; background: ${painting.color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">🖼️</div>
-                    <div class="gallery-item-title">${painting.title}</div>
-                `;
-                grid.appendChild(item);
-            });
-            
-            overlay.classList.add('show');
-        }
-
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
@@ -632,8 +510,6 @@
                     player.position.z = CORRIDOR_LENGTH / 2 - 1;
                     document.getElementById('passwordPrompt').classList.add('show');
                     document.getElementById('passwordInput').focus();
-                } else if (player.position.z > CORRIDOR_LENGTH / 2 + 2) {
-                    showGalleryOverlay();
                 }
             }
 
