@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض فني تفاعلي - Interactive Art Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 14px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+        }
+
+        #passwordPrompt {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        #passwordPrompt.show {
+            display: block;
+        }
+
+        #passwordPrompt h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        #passwordInput {
+            padding: 12px 15px;
+            font-size: 18px;
+            width: 300px;
+            border: 2px solid #666;
+            border-radius: 5px;
+            background: #222;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        #passwordInput::placeholder {
+            color: #999;
+        }
+
+        #passwordInput:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: #fff;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: celebrate 0.5s ease-in-out;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .success-message h1 {
+            color: #ffd700;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            pointer-events: none;
+        }
+
+        #galleryOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+
+        #galleryOverlay.show {
+            display: flex;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #666;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .gallery-item-title {
+            padding: 15px;
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #closeGallery {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 210;
+        }
+
+        #closeGallery:hover {
+            background: #ffed4e;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div id="ui">
+        <div><strong>🎨 معرض فني تفاعلي</strong></div>
+        <div style="margin-top: 10px; font-size: 12px; color: #aaa;">
+            استخدم الفأرة / الأسهم للتحكم<br>
+            W/A/S/D للحركة<br>
+            SPACE للقفز
+        </div>
+    </div>
+
+    <div id="controls">
+        ↑ W / ↓ S للأمام والخلف | ← A / → D لليمين واليسار | 🖱️ حرك الفأرة للالتفات
+    </div>
+
+    <div id="passwordPrompt" class="passwordPrompt">
+        <h2>🔐 الباب مغلق</h2>
+        <p style="color: #999; margin-bottom: 20px;">أدخل رمز الدخول</p>
+        <input type="password" id="passwordInput" placeholder="أدخل الرمز" maxlength="8">
+        <div>
+            <button class="btn" onclick="checkPassword()">فتح الباب</button>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <h1>🎉 مرحباً ديانا!</h1>
+        <p style="color: #fff; font-size: 18px;">تم فتح الباب بنجاح</p>
+    </div>
+
+    <div id="galleryOverlay">
+        <button id="closeGallery" onclick="closeGallery()">✕ إغلاق</button>
+        <h2 style="color: #fff; margin-bottom: 30px; width: 100%; text-align: center;">🖼️ معرض الصور</h2>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/gallery.js"></script>
+</body>
+</html>
